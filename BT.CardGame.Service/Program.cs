@@ -1,3 +1,4 @@
+using BT.CardGame.Service.Endpoints;
 using BT.CardGame.Service.Services;
 using NLog.Web;
 
@@ -22,17 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/play", (string cards, ICardService cardService) =>
-    {
-        var response = cardService.CalculateScore(cards);
-
-        return string.IsNullOrEmpty(response.ErrorMessage) 
-            ? Results.Ok(response.Score) 
-            : Results.BadRequest(response.ErrorMessage);
-    })
-    .Produces<string>(400)
-    .Produces<int>(200)
-    .WithName("play")
-    .WithOpenApi();
+app.MapGroup("/")
+    .MapPlayApi();
 
 app.Run();
