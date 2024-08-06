@@ -6,22 +6,22 @@ public class CardService : ICardService
 {
     private const string JokerToken = "JK";
 
-    private readonly Dictionary<string, (int CardValue, CardType CardType)> _validCardValues = new()
+    private readonly Dictionary<string, Func<CardSuit, Card>> _cardFactory = new()
     {
-        { "2", (2, CardType.Number) },
-        { "3", (3, CardType.Number) },
-        { "4", (4, CardType.Number) },
-        { "5", (5, CardType.Number) },
-        { "6", (6, CardType.Number) },
-        { "7", (7, CardType.Number) },
-        { "8", (8, CardType.Number) },
-        { "9", (9, CardType.Number) },
-        { "T", (10, CardType.Number) },
-        { "J", (11, CardType.Jack) },
-        { "Q", (12, CardType.Queen) },
-        { "K", (13, CardType.King) },
-        { "A", (14, CardType.Ace) },
-        { JokerToken, (0, CardType.Joker) },
+        { "2", (suit) => new Number("2", suit) },
+        { "3", (suit) => new Number("3", suit) },
+        { "4", (suit) => new Number("4", suit) },
+        { "5", (suit) => new Number("5", suit) },
+        { "6", (suit) => new Number("6", suit) },
+        { "7", (suit) => new Number("7", suit) },
+        { "8", (suit) => new Number("8", suit) },
+        { "9", (suit) => new Number("9", suit) },
+        { "T", (suit) => new Number("10", suit) },
+        { "J", (suit) => new Jack("J", suit) },
+        { "Q", (suit) => new Queen("Q", suit) },
+        { "K", (suit) => new King("K", suit) },
+        { "A", (suit) => new Ace("A", suit) },
+        { JokerToken, (suit) => new Joker(JokerToken) },
     };
 
     private readonly Dictionary<char, CardSuit> _validCardSuits = new()
@@ -43,15 +43,7 @@ public class CardService : ICardService
             var score = parsedHand.Cards
                 .Aggregate(0, (total, card) =>
                 {
-                    var toAdd = card.CardType switch
-                    {
-                        CardType.Number => card.CardValue,
-                        CardType.Jack => 11,
-                        CardType.Queen => 12,
-                        CardType.King => 13,
-                        CardType.Ace => 14,
-                        _ => 0
-                    };
+                    var toAdd = card.CardValue;
 
                     var multiplyBy = card.Suit switch
                     {
@@ -68,7 +60,7 @@ public class CardService : ICardService
                 });
 
             var numberOfJokers = parsedHand.Cards
-                .Count(c => c.CardType == CardType.Joker);
+                .Count(c => c is Joker);
 
             score *= (int)Math.Pow(2, numberOfJokers);
 
@@ -97,7 +89,7 @@ public class CardService : ICardService
             var cardKey = $"{cardValue}{cardSuit}";
             var isJoker = cardKey == JokerToken;
 
-            if (!_validCardValues.ContainsKey(cardValue))
+            if (!_cardFactory.ContainsKey(cardValue))
             {
                 if (!isJoker)
                 {
@@ -117,21 +109,15 @@ public class CardService : ICardService
             {
                 return ("Invalid input string", Array.Empty<Card>());
             }
-
-            var newCard = new Card()
-            {
-                Suit = isJoker
-                    ? CardSuit.None
-                    : _validCardSuits[cardSuit],
-                CardType = isJoker
-                    ? CardType.Joker
-                    : _validCardValues[cardValue].CardType,
-                CardValue = _validCardValues.TryGetValue(cardValue, out var card)
-                    ? card.CardValue
-                    : 0
-            };
-
-            if (newCard.CardType == CardType.Joker)
+            
+            var suit = isJoker
+                ? CardSuit.None
+                : _validCardSuits[cardSuit];
+            var newCard = isJoker
+                ? _cardFactory[JokerToken](suit)
+                : _cardFactory[cardValue](suit);
+            
+            if (newCard is Joker)
             {
                 if (parsedJokers.Count == 2)
                 {
