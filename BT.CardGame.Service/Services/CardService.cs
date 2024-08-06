@@ -21,7 +21,7 @@ public class CardService : ICardService
         { "Q", (suit) => new Queen("Q", suit) },
         { "K", (suit) => new King("K", suit) },
         { "A", (suit) => new Ace("A", suit) },
-        { JokerToken, (suit) => new Joker(JokerToken) },
+        { JokerToken, (_) => new Joker(JokerToken) },
     };
 
     private readonly Dictionary<char, CardSuit> _validCardSuits = new()

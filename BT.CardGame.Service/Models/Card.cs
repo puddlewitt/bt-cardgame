@@ -4,14 +4,15 @@ public class Card
 {
     protected readonly string Key;
 
-    protected Card(string key,
+    public Card(string key,
         CardSuit suit)
     {
         Key = key;
         Suit = suit;
+        CardValue = 0;
     }
 
-    public CardSuit Suit { get; set; }
+    public CardSuit Suit { get; }
 
-    public virtual int CardValue { get; } = 0;
+    public virtual int CardValue { get; }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using BT.CardGame.Service.Services;
 
 namespace BT.CardGame.Service.Tests;
@@ -23,7 +24,11 @@ public class CardServiceTests
     [TestCase("AC", ExpectedResult = 14)]
     [TestCase("3C,4C", ExpectedResult = 7)]
     [TestCase("TC,TD,TH,TS", ExpectedResult = 100)]
-    public int CalculateScore_ShouldCalculateScore_WhenSingleOrMultipleCardsUsed(string cards)
+    [TestCase("6C", ExpectedResult = 6)]
+    [TestCase("7C", ExpectedResult = 7)]
+    [TestCase("8C", ExpectedResult = 8)]
+    [TestCase("9C", ExpectedResult = 9)]
+    public int CalculateScore_ShouldCalculateScoreWithoutErrors_WhenSingleOrMultipleCardsUsed(string cards)
     {
         var response = _cardService.CalculateScore(cards);
 
@@ -38,7 +43,7 @@ public class CardServiceTests
     [TestCase("JK,2C,JK", ExpectedResult = 8)]
     [TestCase("TC,TD,JK,TH,TS", ExpectedResult = 200)]
     [TestCase("TC,TD,JK,TH,TS,JK", ExpectedResult = 400)]
-    public int CalculateScore_ShouldDoubleTheScore_WhenJokerIsUsed(string cards)
+    public int CalculateScore_ShouldDoubleTheScoreWithoutErrors_WhenJokerIsUsed(string cards)
     {
         var response = _cardService.CalculateScore(cards);
 
@@ -54,12 +59,25 @@ public class CardServiceTests
     [TestCase("4D,5D,4D", ExpectedResult = "Cards cannot be duplicated")]
     [TestCase("JK,JK,JK", ExpectedResult = "A hand cannot contain more than two Jokers")]
     [TestCase("2S|3D", ExpectedResult = "Invalid input string")]
-    public string CalculateScore_ShouldReturnErrorMessage_WhenInvalidCardsUsed(string cards)
+    public string CalculateScore_ShouldReturnErrorMessageWithoutScore_WhenInvalidCardsUsed(string cards)
     {
         var response = _cardService.CalculateScore(cards);
 
         Assert.That(response.Score, Is.EqualTo(0));
 
         return response.ErrorMessage;
+    }
+
+    [Test]
+    public void CalculateScore_ShouldCalculateAPositiveScore_WhenAllBasicCombinationsWithoutJokerUsed(
+        [Values("2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "K", "Q", "A")] string value,
+        [Values("H", "D", "C", "S")] string suit)
+    {
+        var card = $"{value}{suit}";
+
+        var response = _cardService.CalculateScore(card);
+
+        Assert.That(response.ErrorMessage, Is.EqualTo(string.Empty));
+        Assert.That(response.Score, Is.GreaterThan(0));
     }
 }
