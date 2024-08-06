@@ -28,5 +28,8 @@ app.MapGroup("/")
 
 app.Run();
 
-public partial class Program
-{ }
+namespace BT.CardGame.Service
+{
+    public partial class Program
+    { }
+}
