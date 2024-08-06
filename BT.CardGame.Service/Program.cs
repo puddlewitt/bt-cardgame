@@ -22,12 +22,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/play", (int card, ICardService cardService) =>
+app.MapGet("/play", (string cards, ICardService cardService) =>
     {
-        var score = 1;
+        var response = cardService.CalculateScore(cards);
 
-        return score;
+        return string.IsNullOrEmpty(response.ErrorMessage) 
+            ? Results.Ok(response.Score) 
+            : Results.BadRequest(response.ErrorMessage);
     })
+    .Produces<string>(400)
+    .Produces<int>(200)
     .WithName("play")
     .WithOpenApi();
 
