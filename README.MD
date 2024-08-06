@@ -1,7 +1,17 @@
+<!-- TOC -->
+* [BT Card Game Service](#bt-card-game-service)
+* [Run](#run)
+<!-- TOC -->
+
 # BT Card Game Service
 - Coming soon.
 
-# Run
+# Build
 ```
-ASPNETCORE_ENVIRONMENT=development ASPNETCORE_URLS=http://localhost:5000 dotnet run
+dotnet build
+```
+
+#Test
+```
+dotnet test
 ```
