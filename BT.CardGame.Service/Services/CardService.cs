@@ -23,6 +23,7 @@ public class CardService : ICardService
         { "A", (14, CardType.Ace) },
         { JokerToken, (0, CardType.Joker) },
     };
+
     private readonly Dictionary<char, CardSuit> _validCardSuits = new()
     {
         { 'C', CardSuit.Club },
@@ -30,15 +31,16 @@ public class CardService : ICardService
         { 'H', CardSuit.Heart },
         { 'S', CardSuit.Spade }
     };
+
     private readonly HashSet<char> _validSeparator = new(new[] { ',', char.MinValue });
 
     public (int Score, string ErrorMessage) CalculateScore(string cards)
     {
-        var validCards = ValidateCards(cards);
+        var parsedHand = ValidateAndParseCards(cards);
 
-        if (string.IsNullOrEmpty(validCards.ErrorMessage))
+        if (string.IsNullOrEmpty(parsedHand.ErrorMessage))
         {
-            var score = validCards.Cards
+            var score = parsedHand.Cards
                 .Aggregate(0, (total, card) =>
                 {
                     var toAdd = card.CardType switch
@@ -60,29 +62,23 @@ public class CardService : ICardService
                         _ => 1
                     };
 
-                    var newTotal = total + (toAdd * multiplyBy);
+                    var newTotal = total + toAdd * multiplyBy;
 
                     return newTotal;
                 });
-            
-            return new(score, validCards.ErrorMessage);
+
+            var numberOfJokers = parsedHand.Cards
+                .Count(c => c.CardType == CardType.Joker);
+
+            score *= (int)Math.Pow(2, numberOfJokers);
+
+            return new(score, parsedHand.ErrorMessage);
         }
 
-        // Number cards are worth their face value; e.g. 4 equals 4 points.
-        // - A Jack is worth 11 points, a Queen 12 points, a King 13 points and an Ace 14 points.
-        // - The suit of the card determines what to multiply the card’s value by:
-        // o Club: Multiply by 1
-        // o Diamond: Multiply by 2
-        // o Heart: Multiply by 3
-        // o Spade: Multiply by 4
-        
-        // The point values for each card are added up to give a final score. If a Joker appears anywhere in the
-        //     list of cards, the score for that hand is doubled
-            
-        return new(0, validCards.ErrorMessage);
+        return new(0, parsedHand.ErrorMessage);
     }
 
-    private (string ErrorMessage, IEnumerable<Card> Cards) ValidateCards(string cards)
+    private (string ErrorMessage, IEnumerable<Card> Cards) ValidateAndParseCards(string cards)
     {
         var parsedCards = new Dictionary<string, Card>();
         var parsedJokers = new List<Card>();
@@ -134,14 +130,14 @@ public class CardService : ICardService
                     ? card.CardValue
                     : 0
             };
-            
+
             if (newCard.CardType == CardType.Joker)
             {
                 if (parsedJokers.Count == 2)
                 {
                     return ("A hand cannot contain more than two Jokers", Array.Empty<Card>());
                 }
-                
+
                 parsedJokers.Add(newCard);
             }
             else
@@ -157,7 +153,7 @@ public class CardService : ICardService
 
         var allCards = parsedJokers
             .Concat(parsedCards
-            .Select(v => v.Value));
+                .Select(v => v.Value));
 
         return (string.Empty, allCards);
     }
