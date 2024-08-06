@@ -6,5 +6,6 @@ public enum CardType
     Jack,
     Queen,
     King,
-    Ace
+    Ace,
+    Joker
 }
