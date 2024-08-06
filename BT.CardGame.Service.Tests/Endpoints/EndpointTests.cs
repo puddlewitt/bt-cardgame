@@ -1,7 +1,6 @@
 using BT.CardGame.Service.Endpoints;
 using BT.CardGame.Service.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Routing;
 using Moq;
 
 namespace BT.CardGame.Service.Tests.Endpoints;

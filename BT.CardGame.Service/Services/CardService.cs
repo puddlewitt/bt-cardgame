@@ -38,36 +38,36 @@ public class CardService : ICardService
     {
         var parsedHand = ValidateAndParseCards(cards);
 
-        if (string.IsNullOrEmpty(parsedHand.ErrorMessage))
+        if (!string.IsNullOrEmpty(parsedHand.ErrorMessage))
         {
-            var score = parsedHand.Cards
-                .Aggregate(0, (total, card) =>
-                {
-                    var toAdd = card.CardValue;
-
-                    var multiplyBy = card.Suit switch
-                    {
-                        CardSuit.Club => 1,
-                        CardSuit.Diamond => 2,
-                        CardSuit.Heart => 3,
-                        CardSuit.Spade => 4,
-                        _ => 1
-                    };
-
-                    var newTotal = total + toAdd * multiplyBy;
-
-                    return newTotal;
-                });
-
-            var numberOfJokers = parsedHand.Cards
-                .Count(c => c is Joker);
-
-            score *= (int)Math.Pow(2, numberOfJokers);
-
-            return new(score, parsedHand.ErrorMessage);
+            return new(0, parsedHand.ErrorMessage);
         }
+        
+        var score = parsedHand.Cards
+            .Aggregate(0, (total, card) =>
+            {
+                var toAdd = card.CardValue;
 
-        return new(0, parsedHand.ErrorMessage);
+                var multiplyBy = card.Suit switch
+                {
+                    CardSuit.Club => 1,
+                    CardSuit.Diamond => 2,
+                    CardSuit.Heart => 3,
+                    CardSuit.Spade => 4,
+                    _ => 1
+                };
+
+                var newTotal = total + toAdd * multiplyBy;
+
+                return newTotal;
+            });
+
+        var numberOfJokers = parsedHand.Cards
+            .Count(c => c is Joker);
+
+        score *= (int)Math.Pow(2, numberOfJokers);
+
+        return new(score, string.Empty);
     }
 
     private (string ErrorMessage, IEnumerable<Card> Cards) ValidateAndParseCards(string cards)
@@ -89,20 +89,16 @@ public class CardService : ICardService
             var cardKey = $"{cardValue}{cardSuit}";
             var isJoker = cardKey == JokerToken;
 
-            if (!_cardFactory.ContainsKey(cardValue))
+            if (!_cardFactory.ContainsKey(cardValue) 
+                && !isJoker)
             {
-                if (!isJoker)
-                {
-                    return ("Card not recognised", Array.Empty<Card>());
-                }
+                return ("Card not recognised", Array.Empty<Card>());
             }
 
-            if (!_validCardSuits.ContainsKey(cardSuit))
+            if (!_validCardSuits.ContainsKey(cardSuit) 
+                && !isJoker)
             {
-                if (!isJoker)
-                {
-                    return ("Card not recognised", Array.Empty<Card>());
-                }
+                return ("Card not recognised", Array.Empty<Card>());
             }
 
             if (!_validSeparator.Contains(cardSeparator))

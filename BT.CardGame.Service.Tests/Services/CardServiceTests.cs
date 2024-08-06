@@ -1,7 +1,6 @@
-using System.Collections;
 using BT.CardGame.Service.Services;
 
-namespace BT.CardGame.Service.Tests;
+namespace BT.CardGame.Service.Tests.Services;
 
 public class CardServiceTests
 {

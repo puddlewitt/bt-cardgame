@@ -1,5 +1,7 @@
 <!-- TOC -->
 * [BT Card Game Service](#bt-card-game-service)
+* [Build](#build)
+* [Test](#test)
 * [Run](#run)
 <!-- TOC -->
 

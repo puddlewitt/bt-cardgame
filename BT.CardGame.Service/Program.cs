@@ -27,3 +27,6 @@ app.MapGroup("/")
     .MapPlayApi();
 
 app.Run();
+
+public partial class Program
+{ }
