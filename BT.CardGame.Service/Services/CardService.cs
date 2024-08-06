@@ -4,25 +4,24 @@ namespace BT.CardGame.Service.Services;
 
 public class CardService : ICardService
 {
-    private readonly Dictionary<char, int> _validCardValues = new()
+    private const string JokerToken = "JK";
+
+    private readonly Dictionary<string, (int CardValue, CardType CardType)> _validCardValues = new()
     {
-        { '2', 2 },
-        { '3', 3 },
-        { '4', 4 },
-        { '5', 5 },
-        { '6', 6 },
-        { '7', 7 },
-        { '8', 8 },
-        { '9', 9 },
-        { 'T', 10 },
-    };
-    private readonly Dictionary<string, CardType> _validCardTypes = new()
-    {
-        { "J", CardType.Jack },
-        { "Q", CardType.Queen },
-        { "K", CardType.King },
-        { "A", CardType.Ace },
-        { JokerToken, CardType.Joker },
+        { "2", (2, CardType.Number) },
+        { "3", (3, CardType.Number) },
+        { "4", (4, CardType.Number) },
+        { "5", (5, CardType.Number) },
+        { "6", (6, CardType.Number) },
+        { "7", (7, CardType.Number) },
+        { "8", (8, CardType.Number) },
+        { "9", (9, CardType.Number) },
+        { "T", (10, CardType.Number) },
+        { "J", (11, CardType.Jack) },
+        { "Q", (12, CardType.Queen) },
+        { "K", (13, CardType.King) },
+        { "A", (14, CardType.Ace) },
+        { JokerToken, (0, CardType.Joker) },
     };
     private readonly Dictionary<char, CardSuit> _validCardSuits = new()
     {
@@ -32,12 +31,54 @@ public class CardService : ICardService
         { 'S', CardSuit.Spade }
     };
     private readonly HashSet<char> _validSeparator = new(new[] { ',', char.MinValue });
-    private const string JokerToken = "JK";
 
     public (int Score, string ErrorMessage) CalculateScore(string cards)
     {
         var validCards = ValidateCards(cards);
 
+        if (string.IsNullOrEmpty(validCards.ErrorMessage))
+        {
+            var score = validCards.Cards
+                .Aggregate(0, (total, card) =>
+                {
+                    var toAdd = card.CardType switch
+                    {
+                        CardType.Number => card.CardValue,
+                        CardType.Jack => 11,
+                        CardType.Queen => 12,
+                        CardType.King => 13,
+                        CardType.Ace => 14,
+                        _ => 0
+                    };
+
+                    var multiplyBy = card.Suit switch
+                    {
+                        CardSuit.Club => 1,
+                        CardSuit.Diamond => 2,
+                        CardSuit.Heart => 3,
+                        CardSuit.Spade => 4,
+                        _ => 1
+                    };
+
+                    var newTotal = total + (toAdd * multiplyBy);
+
+                    return newTotal;
+                });
+            
+            return new(score, validCards.ErrorMessage);
+        }
+
+        // Number cards are worth their face value; e.g. 4 equals 4 points.
+        // - A Jack is worth 11 points, a Queen 12 points, a King 13 points and an Ace 14 points.
+        // - The suit of the card determines what to multiply the card’s value by:
+        // o Club: Multiply by 1
+        // o Diamond: Multiply by 2
+        // o Heart: Multiply by 3
+        // o Spade: Multiply by 4
+        
+        // The point values for each card are added up to give a final score. If a Joker appears anywhere in the
+        //     list of cards, the score for that hand is doubled
+            
         return new(0, validCards.ErrorMessage);
     }
 
@@ -52,16 +93,17 @@ public class CardService : ICardService
         {
             var suitIndex = index + 1;
             var separatorIndex = index + 2;
-            var cardValue = cardChars[index];
+            var cardValue = cardChars[index].ToString();
             var cardSuit = cardChars[suitIndex];
             var cardSeparator = separatorIndex >= cardChars.Length
                 ? char.MinValue
                 : cardChars[separatorIndex];
             var cardKey = $"{cardValue}{cardSuit}";
+            var isJoker = cardKey == JokerToken;
 
             if (!_validCardValues.ContainsKey(cardValue))
             {
-                if (!_validCardTypes.ContainsKey(cardKey))
+                if (!isJoker)
                 {
                     return ("Card not recognised", Array.Empty<Card>());
                 }
@@ -69,7 +111,7 @@ public class CardService : ICardService
 
             if (!_validCardSuits.ContainsKey(cardSuit))
             {
-                if (!_validCardTypes.ContainsKey(cardKey))
+                if (!isJoker)
                 {
                     return ("Card not recognised", Array.Empty<Card>());
                 }
@@ -82,18 +124,18 @@ public class CardService : ICardService
 
             var newCard = new Card()
             {
-                Suit = cardKey == JokerToken 
+                Suit = isJoker
                     ? CardSuit.None
                     : _validCardSuits[cardSuit],
-                Type = _validCardValues.ContainsKey(cardValue)
-                    ? CardType.Number
-                    : cardKey == JokerToken
-                        ? CardType.Joker
-                        : _validCardTypes[cardValue.ToString()],
-                Value = _validCardValues.GetValueOrDefault(cardValue, 0)
+                CardType = isJoker
+                    ? CardType.Joker
+                    : _validCardValues[cardValue].CardType,
+                CardValue = _validCardValues.TryGetValue(cardValue, out var card)
+                    ? card.CardValue
+                    : 0
             };
             
-            if (newCard.Type == CardType.Joker)
+            if (newCard.CardType == CardType.Joker)
             {
                 if (parsedJokers.Count == 2)
                 {

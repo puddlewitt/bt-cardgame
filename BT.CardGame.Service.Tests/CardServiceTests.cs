@@ -12,15 +12,15 @@ public class CardServiceTests
         _cardService = new CardService();
     }
 
-    [TestCase("2C", ExpectedResult = 20)]
-    [TestCase("2D", ExpectedResult = 40)]
-    [TestCase("2H", ExpectedResult = 60)]
-    [TestCase("2S", ExpectedResult = 80)]
-    [TestCase("TC", ExpectedResult = 100)]
-    [TestCase("JC", ExpectedResult = 110)]
-    [TestCase("QC", ExpectedResult = 120)]
-    [TestCase("KC", ExpectedResult = 130)]
-    [TestCase("AC", ExpectedResult = 140)]
+    [TestCase("2C", ExpectedResult = 2)]
+    [TestCase("2D", ExpectedResult = 4)]
+    [TestCase("2H", ExpectedResult = 6)]
+    [TestCase("2S", ExpectedResult = 8)]
+    [TestCase("TC", ExpectedResult = 10)]
+    [TestCase("JC", ExpectedResult = 11)]
+    [TestCase("QC", ExpectedResult = 12)]
+    [TestCase("KC", ExpectedResult = 13)]
+    [TestCase("AC", ExpectedResult = 14)]
     [TestCase("3C,4C", ExpectedResult = 7)]
     [TestCase("TC,TD,TH,TS", ExpectedResult = 100)]
     public int CalculateScore_ShouldCalculateScore_WhenSingleOrMultipleCardsUsed(string cards)
