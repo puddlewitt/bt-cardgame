@@ -2,8 +2,8 @@ namespace BT.CardGame.Service.Services;
 
 public class CardService : ICardService
 {
-    public int CalculateScore(string cards)
+    public (int Score, string ErrorMessage) CalculateScore(string cards)
     {
-        return 0;
+        throw new NotImplementedException();
     }
 }
