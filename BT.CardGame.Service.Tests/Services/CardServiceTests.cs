@@ -58,6 +58,18 @@ public class CardServiceTests
     [TestCase("4D,5D,4D", ExpectedResult = "Cards cannot be duplicated")]
     [TestCase("JK,JK,JK", ExpectedResult = "A hand cannot contain more than two Jokers")]
     [TestCase("2S|3D", ExpectedResult = "Invalid input string")]
+    [TestCase("2S,3D|4D", ExpectedResult = "Invalid input string")]
+    [TestCase("", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase("😀", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase(",", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase(",,,,", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase("1", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase("111", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase("H", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase("HHH", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase("1H,", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase("1H,1", ExpectedResult = "Invalid input - check card schema")]
+    [TestCase("1H,H", ExpectedResult = "Invalid input - check card schema")]
     public string CalculateScore_ShouldReturnErrorMessageWithoutScore_WhenInvalidCardsUsed(string cards)
     {
         var response = _cardService.CalculateScore(cards);

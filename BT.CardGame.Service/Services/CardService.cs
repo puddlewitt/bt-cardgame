@@ -72,6 +72,18 @@ public class CardService : ICardService
 
     private (string ErrorMessage, IEnumerable<Card> Cards) ValidateAndParseCards(string cards)
     {
+        var cardPairs = cards
+            .Where(char.IsLetterOrDigit);
+        
+        if (string.IsNullOrWhiteSpace(cards)
+            || cards.Length < 2
+            || cardPairs.Count() % 2 != 0
+            || !cards.Any(char.IsLetterOrDigit)
+            || !char.IsLetterOrDigit(cards[^1]))
+        {
+            return ("Invalid input - check card schema", Array.Empty<Card>()); 
+        }
+        
         var parsedCards = new Dictionary<string, Card>();
         var parsedJokers = new List<Card>();
         var cardChars = cards.ToCharArray();
