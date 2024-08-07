@@ -5,7 +5,7 @@ namespace BT.CardGame.Service.Tests.Services;
 public class CardServiceTests
 {
     private ICardService _cardService;
-    
+
     [SetUp]
     public void Setup()
     {
@@ -32,10 +32,10 @@ public class CardServiceTests
         var response = _cardService.CalculateScore(cards);
 
         Assert.That(response.ErrorMessage, Is.EqualTo(string.Empty));
-        
+
         return response.Score;
     }
-    
+
     [TestCase("JK", ExpectedResult = 0)]
     [TestCase("JK,JK", ExpectedResult = 0)]
     [TestCase("2C,JK", ExpectedResult = 4)]
@@ -47,7 +47,7 @@ public class CardServiceTests
         var response = _cardService.CalculateScore(cards);
 
         Assert.That(response.ErrorMessage, Is.EqualTo(string.Empty));
-        
+
         return response.Score;
     }
 

@@ -30,6 +30,7 @@ app.Run();
 
 namespace BT.CardGame.Service
 {
-    public partial class Program
-    { }
+    public class Program
+    {
+    }
 }

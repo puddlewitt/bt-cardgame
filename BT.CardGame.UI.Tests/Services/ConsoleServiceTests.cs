@@ -20,41 +20,39 @@ public class ConsoleServiceTests
     public void WriteLine_ShouldWriteToOutput_WhenOutputUsedToInformUserOfAnErrorMessage()
     {
         using var sw = new StringWriter();
-        
+
         Console.SetOut(sw);
 
         _consoleService.WriteLine(new Exception(SomeErrorOutput));
-        
+
         var response = sw.GetStringBuilder().ToString();
-        
+
         Assert.That(response, Is.EqualTo($"System.Exception: {SomeErrorOutput}{Environment.NewLine}"));
     }
-    
+
     [Test]
     public void WriteLine_ShouldWriteToOutput_WhenOutputUsedToInformUserOfAMessage()
     {
-
         using var sw = new StringWriter();
-        
+
         Console.SetOut(sw);
 
         _consoleService.WriteLine(SomeOutput);
-        
+
         var response = sw.GetStringBuilder().ToString();
-        
+
         Assert.That(response, Is.EqualTo($"{SomeOutput}{Environment.NewLine}"));
     }
-    
+
     [Test]
     public void ReadLine_ShouldReadFromInput_WhenInputProvided()
     {
-
         using var sr = new StringReader(SomeInput);
-        
+
         Console.SetIn(sr);
-        
+
         var response = _consoleService.ReadLine();
-        
+
         Assert.That(response, Is.EqualTo(SomeInput));
     }
 }

@@ -13,7 +13,7 @@ public class EndpointTests
     private const int Score = 1;
 
     private Mock<ICardService> _mockCardService;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -32,19 +32,19 @@ public class EndpointTests
         var result = ScoreEndpoints.ScoreHandler(OkCards, _mockCardService.Object);
 
         Assert.That(result, Is.TypeOf<Ok<int>>());
-        
+
         var okResult = (Ok<int>)result;
-        
+
         Assert.That(okResult.Value, Is.EqualTo(Score));
     }
-    
+
     [Test]
     public void Handler_ShouldReturnBadRequestWithErrorMessage_WhenInvalidCardsSubmitted()
     {
         var result = ScoreEndpoints.ScoreHandler(FailCards, _mockCardService.Object);
-     
+
         Assert.That(result, Is.TypeOf<BadRequest<string>>());
-        
+
         var badRequestResult = (BadRequest<string>)result;
 
         Assert.That(badRequestResult.Value, Is.EqualTo(ErrorMessage));

@@ -8,20 +8,20 @@ public class CardService : ICardService
 
     private readonly Dictionary<string, Func<CardSuit, Card>> _cardFactory = new()
     {
-        { "2", (suit) => new Number("2", suit) },
-        { "3", (suit) => new Number("3", suit) },
-        { "4", (suit) => new Number("4", suit) },
-        { "5", (suit) => new Number("5", suit) },
-        { "6", (suit) => new Number("6", suit) },
-        { "7", (suit) => new Number("7", suit) },
-        { "8", (suit) => new Number("8", suit) },
-        { "9", (suit) => new Number("9", suit) },
-        { "T", (suit) => new Number("10", suit) },
-        { "J", (suit) => new Jack("J", suit) },
-        { "Q", (suit) => new Queen("Q", suit) },
-        { "K", (suit) => new King("K", suit) },
-        { "A", (suit) => new Ace("A", suit) },
-        { JokerToken, (_) => new Joker(JokerToken) },
+        { "2", suit => new Number("2", suit) },
+        { "3", suit => new Number("3", suit) },
+        { "4", suit => new Number("4", suit) },
+        { "5", suit => new Number("5", suit) },
+        { "6", suit => new Number("6", suit) },
+        { "7", suit => new Number("7", suit) },
+        { "8", suit => new Number("8", suit) },
+        { "9", suit => new Number("9", suit) },
+        { "T", suit => new Number("10", suit) },
+        { "J", suit => new Jack("J", suit) },
+        { "Q", suit => new Queen("Q", suit) },
+        { "K", suit => new King("K", suit) },
+        { "A", suit => new Ace("A", suit) },
+        { JokerToken, _ => new Joker(JokerToken) }
     };
 
     private readonly Dictionary<char, CardSuit> _validCardSuits = new()
@@ -40,9 +40,9 @@ public class CardService : ICardService
 
         if (!string.IsNullOrEmpty(parsedHand.ErrorMessage))
         {
-            return new(0, parsedHand.ErrorMessage);
+            return (0, parsedHand.ErrorMessage);
         }
-        
+
         var score = parsedHand.Cards
             .Aggregate(0, (total, card) =>
             {
@@ -67,23 +67,23 @@ public class CardService : ICardService
 
         score *= (int)Math.Pow(2, numberOfJokers);
 
-        return new(score, string.Empty);
+        return (score, string.Empty);
     }
 
     private (string ErrorMessage, IEnumerable<Card> Cards) ValidateAndParseCards(string cards)
     {
         var cardPairs = cards
             .Where(char.IsLetterOrDigit);
-        
+
         if (string.IsNullOrWhiteSpace(cards)
             || cards.Length < 2
             || cardPairs.Count() % 2 != 0
             || !cards.Any(char.IsLetterOrDigit)
             || !char.IsLetterOrDigit(cards[^1]))
         {
-            return ("Invalid input - check card schema", Array.Empty<Card>()); 
+            return ("Invalid input - check card schema", Array.Empty<Card>());
         }
-        
+
         var parsedCards = new Dictionary<string, Card>();
         var parsedJokers = new List<Card>();
         var cardChars = cards.ToCharArray();
@@ -101,13 +101,13 @@ public class CardService : ICardService
             var cardKey = $"{cardValue}{cardSuit}";
             var isJoker = cardKey == JokerToken;
 
-            if (!_cardFactory.ContainsKey(cardValue) 
+            if (!_cardFactory.ContainsKey(cardValue)
                 && !isJoker)
             {
                 return ("Card not recognised", Array.Empty<Card>());
             }
 
-            if (!_validCardSuits.ContainsKey(cardSuit) 
+            if (!_validCardSuits.ContainsKey(cardSuit)
                 && !isJoker)
             {
                 return ("Card not recognised", Array.Empty<Card>());
@@ -117,14 +117,14 @@ public class CardService : ICardService
             {
                 return ("Invalid input string", Array.Empty<Card>());
             }
-            
+
             var suit = isJoker
                 ? CardSuit.None
                 : _validCardSuits[cardSuit];
             var newCard = isJoker
                 ? _cardFactory[JokerToken](suit)
                 : _cardFactory[cardValue](suit);
-            
+
             if (newCard is Joker)
             {
                 if (parsedJokers.Count == 2)

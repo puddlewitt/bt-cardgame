@@ -16,15 +16,15 @@ public class CardGameScoreServiceTests
     private const string SendAsyncMethodName = "SendAsync";
     private const string BaseUrl = "http://localhost";
 
-    private CancellationTokenSource _cts;
+    private ICardGameScoreService _cardGameScoreService;
     private CardGameScoreConfiguration _config;
+
+    private CancellationTokenSource _cts;
     private HttpClient _httpClient;
 
     private Mock<IOptions<CardGameScoreConfiguration>> _mockConfig;
     private Mock<DelegatingHandler> _mockDelegatingHandler;
     private Mock<IUserInteractionService> _mockUserInteractionService;
-
-    private ICardGameScoreService _cardGameScoreService;
 
     [TearDown]
     public void TearDown()
@@ -37,7 +37,7 @@ public class CardGameScoreServiceTests
     public void SetUp()
     {
         _cts = new CancellationTokenSource();
-        _config = new CardGameScoreConfiguration()
+        _config = new CardGameScoreConfiguration
         {
             BaseUrl = BaseUrl
         };
@@ -53,9 +53,10 @@ public class CardGameScoreServiceTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 SendAsyncMethodName,
-                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={ValidCards}"),
+                ItExpr.Is<HttpRequestMessage>(u =>
+                    u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={ValidCards}"),
                 ItExpr.IsAny<CancellationToken>()
-            ).ReturnsAsync(new HttpResponseMessage()
+            ).ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(Score)
@@ -65,9 +66,10 @@ public class CardGameScoreServiceTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 SendAsyncMethodName,
-                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={InvalidCards}"),
+                ItExpr.Is<HttpRequestMessage>(u =>
+                    u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={InvalidCards}"),
                 ItExpr.IsAny<CancellationToken>()
-            ).ReturnsAsync(new HttpResponseMessage()
+            ).ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Content = new StringContent(InvalidCardsMessage)
@@ -135,12 +137,13 @@ public class CardGameScoreServiceTests
     public async Task GoAsync_ShouldInteractWithUserAndPrintErrorToUser_WhenErrorThrown()
     {
         var ex = new Exception("OH_NO");
-        
+
         _mockDelegatingHandler
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 SendAsyncMethodName,
-                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={ValidCards}"),
+                ItExpr.Is<HttpRequestMessage>(u =>
+                    u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={ValidCards}"),
                 ItExpr.IsAny<CancellationToken>()
             ).Throws(() => ex);
 
@@ -169,12 +172,12 @@ public class CardGameScoreServiceTests
         _mockUserInteractionService.InSequence(sequence)
             .Setup(m => m.ReadLine())
             .Returns(inputFromUser);
-        
+
         _mockUserInteractionService.InSequence(sequence)
             .Setup(m => m.ReadLine())
             .Returns(inputFromUser)
             .Callback(_cts.Cancel);
-        
+
         await _cardGameScoreService.GoAsync(_cts.Token);
 
         _mockUserInteractionService.Verify(

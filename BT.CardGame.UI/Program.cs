@@ -16,7 +16,8 @@ builder.Services.AddScoped<ICardGameScoreService, CardGameScoreService>();
 
 using var host = builder.Build();
 
-var scoreService = host.Services.GetService<ICardGameScoreService>();
+using var scope = host.Services.CreateScope();
+var scoreService = scope.ServiceProvider.GetService<ICardGameScoreService>();
 var cts = new CancellationTokenSource();
 
 if (scoreService == null)

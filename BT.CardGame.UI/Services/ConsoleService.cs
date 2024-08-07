@@ -2,7 +2,10 @@ namespace BT.CardGame.UI.Services;
 
 public class ConsoleService : IUserInteractionService
 {
-    public string? ReadLine() => Console.ReadLine();
+    public string? ReadLine()
+    {
+        return Console.ReadLine();
+    }
 
     public void WriteLine(string message)
     {

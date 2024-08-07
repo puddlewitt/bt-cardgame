@@ -24,7 +24,8 @@ public class CardGameScoreService : ICardGameScoreService
     {
         while (!ct.IsCancellationRequested)
         {
-            _userInteractionService.WriteLine("Please enter your cards for a score calculation (or ctrl-c to exit). For example '2C'");
+            _userInteractionService.WriteLine(
+                "Please enter your cards for a score calculation (or ctrl-c to exit). For example '2C'");
 
             var input = _userInteractionService.ReadLine();
 
@@ -32,7 +33,7 @@ public class CardGameScoreService : ICardGameScoreService
             {
                 continue;
             }
-            
+
             try
             {
                 var query = HttpUtility.ParseQueryString(string.Empty);
