@@ -19,6 +19,8 @@ dotnet test
 ```
 
 # Run
+> You will need docker
+
 From the root of the repo...
 ```
 docker compose run --build --rm ui
