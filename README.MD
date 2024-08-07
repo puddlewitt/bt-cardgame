@@ -21,6 +21,5 @@ dotnet test
 # Run
 From the root of the repo...
 ```
-dotnet run --project BT.CardGame.Service/BT.CardGame.Service.csproj
+docker compose run --build --rm ui
 ```
-Once the service has started, use a browser to navigate to http://localhost:5000/swagger/index.html and use the `Try it out` button.
