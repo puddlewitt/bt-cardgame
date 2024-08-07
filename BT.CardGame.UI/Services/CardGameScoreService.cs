@@ -40,7 +40,7 @@ public class CardGameScoreService : ICardGameScoreService
                 query["cards"] = input;
 
                 var queryString = query.ToString();
-                var uri = new Uri($"{_config.Value.BaseUrl}/play?{queryString}", UriKind.Absolute);
+                var uri = new Uri($"{_config.Value.BaseUrl}/score?{queryString}", UriKind.Absolute);
 
                 var response = await _httpClient.GetAsync(uri, ct);
 

@@ -24,7 +24,7 @@ public class ProgramTests : WebApplicationFactory<Program>
     [TestCase("2C,3C", ExpectedResult = HttpStatusCode.OK)]
     public async Task<HttpStatusCode> GetAsync_ShouldReturnOk_WhenValidCardsProvided(string cards)
     {
-        var uri = BuildPlayRequest(cards);
+        var uri = BuildScoreRequest(cards);
 
         var response = await _httpClient.GetAsync(uri);
 
@@ -35,14 +35,14 @@ public class ProgramTests : WebApplicationFactory<Program>
     [TestCase("2C|3C", ExpectedResult = HttpStatusCode.BadRequest)]
     public async Task<HttpStatusCode> GetAsync_ShouldReturnBadRequest_WhenInValidCardsProvided(string cards)
     {
-        var uri = BuildPlayRequest(cards);
+        var uri = BuildScoreRequest(cards);
 
         var response = await _httpClient.GetAsync(uri);
 
         return response.StatusCode;
     }
 
-    private Uri BuildPlayRequest(string cards)
+    private Uri BuildScoreRequest(string cards)
     {
         var queryBuilder = new QueryBuilder(new[]
         {
@@ -51,7 +51,7 @@ public class ProgramTests : WebApplicationFactory<Program>
         var builder = new UriBuilder()
         {
             Query = queryBuilder.ToString(),
-            Path = "play"
+            Path = "score"
         };
 
         return builder.Uri;

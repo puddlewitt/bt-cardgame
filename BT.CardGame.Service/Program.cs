@@ -24,7 +24,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGroup("/")
-    .MapPlayApi();
+    .MapScoreApi();
 
 app.Run();
 

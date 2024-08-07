@@ -29,7 +29,7 @@ public class EndpointTests
     [Test]
     public void Handler_ShouldReturnOkWithScore_WhenValidCardsSubmitted()
     {
-        var result = PlayEndpoints.PlayHandler(OkCards, _mockCardService.Object);
+        var result = ScoreEndpoints.ScoreHandler(OkCards, _mockCardService.Object);
 
         Assert.That(result, Is.TypeOf<Ok<int>>());
         
@@ -41,7 +41,7 @@ public class EndpointTests
     [Test]
     public void Handler_ShouldReturnBadRequestWithErrorMessage_WhenInvalidCardsSubmitted()
     {
-        var result = PlayEndpoints.PlayHandler(FailCards, _mockCardService.Object);
+        var result = ScoreEndpoints.ScoreHandler(FailCards, _mockCardService.Object);
      
         Assert.That(result, Is.TypeOf<BadRequest<string>>());
         

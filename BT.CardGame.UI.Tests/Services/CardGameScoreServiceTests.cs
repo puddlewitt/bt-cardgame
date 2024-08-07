@@ -53,7 +53,7 @@ public class CardGameScoreServiceTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 SendAsyncMethodName,
-                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/play?cards={ValidCards}"),
+                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={ValidCards}"),
                 ItExpr.IsAny<CancellationToken>()
             ).ReturnsAsync(new HttpResponseMessage()
             {
@@ -65,7 +65,7 @@ public class CardGameScoreServiceTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 SendAsyncMethodName,
-                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/play?cards={InvalidCards}"),
+                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={InvalidCards}"),
                 ItExpr.IsAny<CancellationToken>()
             ).ReturnsAsync(new HttpResponseMessage()
             {
@@ -140,7 +140,7 @@ public class CardGameScoreServiceTests
             .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 SendAsyncMethodName,
-                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/play?cards={ValidCards}"),
+                ItExpr.Is<HttpRequestMessage>(u => u.RequestUri != null && u.RequestUri.AbsoluteUri == $"{BaseUrl}/score?cards={ValidCards}"),
                 ItExpr.IsAny<CancellationToken>()
             ).Throws(() => ex);
 
